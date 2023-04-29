@@ -12,10 +12,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return UserModel.objects.create_user(
-            email=validated_data["email"],
-            username=validated_data["username"],
-            password=validated_data["password"],
-            is_cafe_owner=validated_data["is_cafe_owner"],
+            **validated_data
         )
 
 
