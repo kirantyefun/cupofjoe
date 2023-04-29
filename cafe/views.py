@@ -12,7 +12,13 @@ from .serializers import (CafeListSerializer, CafeSerializer,
 
 
 class CafeViewSet(ModelViewSet):
+    """
+    A viewset for handling CRUD operations on Cafe model.
+    """
     def get_permissions(self):
+        """
+        Return a list of permission instances that this view requires.
+        """
         if self.action in ["list", "retrieve"]:
             permission_classes = [permissions.AllowAny]
         elif self.action == "create":
@@ -20,7 +26,7 @@ class CafeViewSet(ModelViewSet):
         elif self.action == 'place_order':
             permission_classes = [permissions.IsAuthenticated]
         else:
-            permission_classes = [permissions.IsAuthenticated, CafeOwnerRequired]
+            permission_classes = [permissions.IsAuthenticated, HasCafeRegistered]
         return [permission() for permission in permission_classes]
 
     queryset = Cafe.objects.prefetch_related("menu_items")
@@ -31,6 +37,9 @@ class CafeViewSet(ModelViewSet):
         return CafeSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a new Cafe object and set the field 'has_cafe_registered' to true.
+        """
         data = request.data
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=data)
@@ -42,6 +51,9 @@ class CafeViewSet(ModelViewSet):
     
     @action(methods=['POST'], detail=True, url_path='place-order')
     def place_order(self, request, pk):
+        """
+        Place an order for a menu item from a cafe.
+        """
         order_serializer = OrderSerializer(data=request.data)
         order_serializer.is_valid(raise_exception=True)
         cafe = self.get_object()
@@ -63,17 +75,25 @@ class CafeViewSet(ModelViewSet):
 
 class MenuItemViewSet(ModelViewSet):
     """
+    A viewset for handling CRUD operations on MenuItem model.
     cafe owner permission is required to use operations in this viewset
     """
 
     permission_classes = [permissions.IsAuthenticated, HasCafeRegistered]
 
     def get_queryset(self):
+        """
+        Return a queryset of all menu items of the cafe registered in the email of current user.
+        """
         return self.request.user.cafe.menu
 
     serializer_class = MenuItemSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a new MenuItem object.
+        """
+
         data = request.data.copy()
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=data)
