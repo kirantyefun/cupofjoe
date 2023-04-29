@@ -1,4 +1,4 @@
-This project provides an API for managing user accounts, recipes and ingredients, built with Django and Django Rest Framework. Users can register, login, and logout using Django token authentication. The API allows users to view, create, update, and delete their own recipes and ingredients, as well as view recipes uploaded by other users. Users can also leave reviews for recipes, which include a rating and a comment.
+This project provides an API for managing user accounts, recipes and ingredients, built with Django and Django Rest Framework. Users can register, login, and logout using Django token authentication. The API allows unauthenticated users to view cafes and their menus and authenticated users to order items from cafes.
 
 # Installation
 
